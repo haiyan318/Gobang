@@ -3,12 +3,14 @@
 #include "Judge.h"
 #include <Windows.h>
 #include <iostream>
+#include <random>
+int num = 0;
 enum ChessColor { CHESS_BLACK, CHESS_WHITE };
 enum PiecesType { None, Black, White };
 bool judgeWin(int row_chess, int col_chess, ChessColor color);
 int getscoretable(int self, int e);
 int getscore_h(int r, int c, int pieces);
-
+int random_int();
 int getscore_v(int r, int c, int pieces);
 int getscore_lht(int r, int c, int pieces);
 int getscore_rht(int r, int c, int pieces);
@@ -25,7 +27,7 @@ void cleanMap()
 	for (int i = 0; i < 15; i++) {
 		std::fill(chessMap[i], chessMap[i] + 15, 0);
 	}
-
+	num = 0;
 }
 int main()
 {
@@ -224,6 +226,7 @@ int main()
 						reloadBoard();
 						reloadModeOptions();
 						cleanMap();
+						continue;
 					}
 
 					// 切换玩家
@@ -232,14 +235,6 @@ int main()
 			}
 			else if (msg.message == WM_LBUTTONDOWN && mode2)
 			{
-
-
-				/*int gridX = 220 + round((msg.x - 220) / 38.0) * 38; // round() 可以四舍五入
-				int gridY = 35 + round((msg.y - 35) / 38.0) * 38;*/
-
-				
-
-
 				if (currentPlayer == CHESS_BLACK) {
 
 					// 将鼠标像素坐标映射为棋盘格点坐标
@@ -300,65 +295,59 @@ int main()
 						reloadBoard();
 						reloadModeOptions();
 						cleanMap();
+						continue;
 					}
 					currentPlayer = (currentPlayer == CHESS_BLACK) ? CHESS_WHITE : CHESS_BLACK;
 				}
 
 			}
-			else if (msg.message == WM_LBUTTONDOWN && mode3)
+			else if (mode3)
 			{
-				// 将鼠标像素坐标映射为棋盘格点坐标
-				int row_chess = (msg.x - 220 + 19) / 38; // +19用于四舍五入
-				int col_chess = (msg.y - 35 + 19) / 38;
-				/*int gridX = 220 + round((msg.x - 220) / 38.0) * 38; // round() 可以四舍五入
-				int gridY = 35 + round((msg.y - 35) / 38.0) * 38;*/
-
 				if (currentPlayer == CHESS_BLACK)
 					setfillcolor(RGB(0, 0, 0));    // 黑色
 				else
 					setfillcolor(RGB(255, 255, 255)); // 白色
+				int row, col;
+				gocalculatebest(&row, &col);
+				int gridX = 220 + row * 38;
+				int gridY = 35 + col * 38;
+				solidcircle(gridX, gridY, 17);
+				Sleep(400);
+				chessMap[row][col] = (currentPlayer == CHESS_BLACK) ? 1 : 2;
+				FlushBatchDraw();
 
-				if (row_chess >= 0 && row_chess < 15 && col_chess >= 0 && col_chess < 15 && 0 == chessMap[row_chess][col_chess]) // 判断鼠标是否在棋盘内点击
+				// 判断胜负
+				if (judgeWin(row, col, currentPlayer))
 				{
-					// 绘制棋子到对应像素坐标（根据行列计算）
-					int gridX = 220 + row_chess * 38;
-					int gridY = 35 + col_chess * 38;
-					solidcircle(gridX, gridY, 17);
-					// 记录棋子颜色
-					chessMap[row_chess][col_chess] = (currentPlayer == CHESS_BLACK) ? 1 : 2;
-					FlushBatchDraw();
-
-					// 判断胜负
-					if (judgeWin(row_chess, col_chess, currentPlayer))
-					{
-						// 显示胜利信息（例如弹窗或文字）
-						MessageBox(GetHWnd(),
-							(currentPlayer == CHESS_BLACK) ? _T("黑方胜利！") : _T("白方胜利！"),
-							_T("游戏结束"),
-							MB_OK);
-						mode1 = false;
-						mode2 = false;
-						mode3 = false;
-						reloadBoard();
-						reloadModeOptions();
-						cleanMap();
-					}
-
-					// 切换玩家
-					currentPlayer = (currentPlayer == CHESS_BLACK) ? CHESS_WHITE : CHESS_BLACK;
+					// 显示胜利信息（例如弹窗或文字）
+					MessageBox(GetHWnd(),
+						(currentPlayer == CHESS_BLACK) ? _T("黑方胜利！") : _T("白方胜利！"),
+						_T("游戏结束"),
+						MB_OK);
+					mode1 = false;
+					mode2 = false;
+					mode3 = false;
+					reloadBoard();
+					reloadModeOptions();
+					cleanMap();
+					continue;
 				}
+
+				// 切换玩家
+				currentPlayer = (currentPlayer == CHESS_BLACK) ? CHESS_WHITE : CHESS_BLACK;
 			}
+		
 			else if (msg.message == WM_CLOSE)
 			{
 				running = false;
-			}
-		}
-		Sleep(10);
+				}
 	}
+	Sleep(10);
+}
 
-	EndBatchDraw();
+EndBatchDraw();
 
-	return 0;
+return 0;
 }
 
 bool judgeWin(int row_chess, int col_chess, ChessColor color)
@@ -400,26 +389,28 @@ bool judgeWin(int row_chess, int col_chess, ChessColor color)
 }
 int getscoretable(int self, int e)
 {
+	//self 我自己“人机对战时” 电脑判断何处下棋最适合
+	//e
 	if (self > 5) return 200000;
 	if (self == 5 && e == 0) return 200000;
 	if (self == 5 && e == 1) return 200000;
 	if (self == 5 && e == 2) return 200000;
 
-	if (self == 4 && e == 0) return 1000;
-	if (self == 4 && e == 1) return 3000;
-	if (self == 4 && e == 2) return 50000;
+	if (self == 4 && e == 0) return 50000;
+	if (self == 4 && e == 1) return 40000;
+	if (self == 4 && e == 2) return 1000;
 
-	if (self == 3 && e == 0) return 500;
+	if (self == 3 && e == 0) return 30000;
 	if (self == 3 && e == 1) return 1000;
-	if (self == 3 && e == 2) return 3000;
+	if (self == 3 && e == 2) return 500;
 
-	if (self == 2 && e == 0) return 100;
+	if (self == 2 && e == 0) return 500;
 	if (self == 2 && e == 1) return 200;
-	if (self == 2 && e == 2) return 500;
+	if (self == 2 && e == 2) return 100;
 
-	if (self == 1 && e == 0) return 30;
+	if (self == 1 && e == 0) return 100;
 	if (self == 1 && e == 1) return 50;
-	if (self == 1 && e == 2) return 100;
+	if (self == 1 && e == 2) return 30;
 	return 0;
 }
 int getscore_h(int r, int c, int pieces)
@@ -633,4 +624,14 @@ void gocalculatebest(int* row, int* col)
 		isFirst = false;
 	}
 
+}
+int random_int()
+{
+	std::random_device rd;  // 获取随机种子
+	std::mt19937 gen(rd()); // 使用Mersenne Twister引擎
+	std::uniform_int_distribution<int> dist(0, 14); // 定义1-15的均匀分布
+
+	// 生成并打印随机数
+	int random_number = dist(gen);
+	return random_number;
 }
