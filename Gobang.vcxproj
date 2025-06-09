@@ -129,13 +129,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Gobang.cpp" />
-    <ClCompile Include="Judge.cpp" />
+    <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameDefines.h" />
-    <ClInclude Include="Judge.h" />
+    <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
