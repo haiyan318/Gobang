@@ -2,7 +2,9 @@
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
-#include <array>
+#include <vector>
+#include <string> 
+#include <ctime>  
 
 class GameState {
 public:
@@ -10,6 +12,21 @@ public:
     enum PiecesType { None, Black, White };
 
     static const int BOARD_SIZE = 15;
+
+    struct MoveRecord {
+        ChessColor player;
+        int row;
+        int col;
+    };
+
+    bool mode1 = false;
+    bool mode2 = false;
+    bool mode3 = false;
+
+    bool isFirst = true;
+    bool isMenuFolded = true;
+    bool running = true;
+    ChessColor currentPlayer = CHESS_BLACK;
 
     GameState();
 
@@ -19,19 +36,13 @@ public:
     void setPiece(int row, int col, ChessColor color);
     int getPiece(int row, int col) const;
 
-    // ģʽ״̬
-    bool mode1 = false;
-    bool mode2 = false;
-    bool mode3 = false;
-
-    // ��Ϸ״̬
-    bool isFirst = true;
-    bool isMenuFolded = true;
-    bool running = true;
-    ChessColor currentPlayer = CHESS_BLACK;
+    
+    void saveGameRecord(const std::string& status) const;
+    void addMoveRecord(ChessColor player, int row, int col);
 
 private:
     int chessMap[BOARD_SIZE][BOARD_SIZE];
+    std::vector<MoveRecord> moveHistory; 
 };
 
-#endif // GAME_STATE_H
+#endif

@@ -11,21 +11,20 @@ public:
     void run();
 
 private:
-    // 事件处理
-    void handleMenuEvents(ExMessage& msg); // 菜单操作与游戏模式选择
-    void handleGameEvents(ExMessage& msg); // 主界面模式切换
+ 
+    void handleMenuEvents(ExMessage& msg); 
+    void handleGameEvents(ExMessage& msg); 
 
-    // 菜单选项处理
     void handleExitOption();
     void handleSurrenderOption();
     void handleDrawOption();
 
-    // 游戏模式处理
+ 
     void handlePlayerVsPlayer(ExMessage& msg);
-    void handlePlayerVsAI(ExMessage& msg); // xry
+    void handlePlayerVsAI(ExMessage& msg); 
 
 
-    // 游戏操作
+
     void placeChess(int row, int col);
     void showGameResult();
     void resetGame();
@@ -35,4 +34,4 @@ private:
     GameLogic logic;
 };
 
-#endif // GAME_MANAGER_H
+#endif 

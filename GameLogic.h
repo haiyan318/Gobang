@@ -19,4 +19,4 @@ private:
     int getScore(int r, int c, const GameState& state) const;
 };
 
-#endif // GAME_LOGIC_H
+#endif 

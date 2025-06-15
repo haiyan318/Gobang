@@ -1,5 +1,4 @@
 #include "GameLogic.h"
-#include <climits>
 #include <algorithm>
 
 bool GameLogic::judgeWin(int row_chess, int col_chess, GameState::ChessColor color, const GameState& state) const {
@@ -29,7 +28,7 @@ bool GameLogic::judgeWin(int row_chess, int col_chess, GameState::ChessColor col
             count++;
         }
 
-        if (count == 5) {
+        if (count >= 5) {
             return true;
         }
     }

@@ -9,5 +9,5 @@ void init();
 void reloadBoard();
 void reloadModeOptions();
 
-#endif // !UIMANAGER_H
+#endif 
 
